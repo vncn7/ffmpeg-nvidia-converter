@@ -2,6 +2,17 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
+# Function to generate output filename with _converted suffix
+function Get-ConvertedOutputPath {
+    param([string]$inputPath)
+    
+    $directory = [System.IO.Path]::GetDirectoryName($inputPath)
+    $filename = [System.IO.Path]::GetFileNameWithoutExtension($inputPath)
+    $extension = [System.IO.Path]::GetExtension($inputPath)
+    
+    return [System.IO.Path]::Combine($directory, "$filename`_converted$extension")
+}
+
 # Create the main form
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "ffmpeg h264 GPU Accelerated Converter"
@@ -34,6 +45,7 @@ $inputButton.Add_Click({
     $openFileDialog.Filter = "Video Files (*.mp4;*.avi;*.mkv)|*.mp4;*.avi;*.mkv|All Files (*.*)|*.*"
     if ($openFileDialog.ShowDialog() -eq "OK") {
         $inputTextBox.Text = $openFileDialog.FileName  # Set selected file to textbox
+        $outputTextBox.Text = Get-ConvertedOutputPath $openFileDialog.FileName  # Auto-generate output filename
     }
 })
 $form.Controls.Add($inputButton)
